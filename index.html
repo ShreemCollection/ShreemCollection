@@ -1,72 +1,163 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shreem Collection | स्वास्थ्य • सौंदर्य • वेलनेस • केयर</title>
-  <meta name="description" content="Shreem Collection - स्वास्थ्य, सौंदर्य, वेलनेस और केयर के products एक ही जगह।">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shreem Collection - Online Store</title>
+    <style>
+        * { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #f8f9fa; color: #333; }
+        header { background: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 20px; font-weight: bold; color: #802840; }
+        .cart-btn { background: #802840; color: #fff; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .hero { background: #fdf2f4; padding: 30px 20px; text-align: center; }
+        .hero h1 { font-size: 22px; color: #802840; margin-bottom: 10px; }
+        .controls { padding: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .controls input, .controls select { padding: 10px; border: 1px solid #ccc; border-radius: 8px; width: 100%; max-width: 300px; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; max-width: 1000px; margin: auto; }
+        .product-card { background: #fff; border-radius: 10px; padding: 12px; border: 1px solid #eee; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card img { width: 100%; height: 130px; object-fit: cover; border-radius: 8px; }
+        .product-title { font-size: 14px; font-weight: bold; margin: 8px 0; }
+        .price { margin: 5px 0; }
+        .mrp { text-decoration: line-through; color: #888; font-size: 12px; }
+        .selling { color: #802840; font-weight: bold; font-size: 15px; }
+        .add-btn { background: #25D366; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 8px; }
+        
+        .cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 200; }
+        .cart-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .order-btn { background: #25D366; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .close-btn { background: #ccc; border: none; padding: 5px 10px; border-radius: 5px; float: right; cursor: pointer; }
+    </style>
 </head>
 <body>
-<header>
-  <div class="brand">
-    <div class="logo">🌸</div>
-    <div>
-      <h1>Shreem Collection</h1>
-      <p>स्वास्थ्य • सौंदर्य • वेलनेस • केयर</p>
+
+    <header>
+        <div class="logo">🌸 Shreem Collection</div>
+        <button class="cart-btn" onclick="toggleCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
+    </header>
+
+    <section class="hero">
+        <h1>आपकी ज़रूरत के Products, एक ही जगह</h1>
+        <p>स्वास्थ्य • सौंदर्य • वेलनेस • पर्सनल केयर • कृषि उत्पाद</p>
+    </section>
+
+    <div class="controls">
+        <input type="text" id="search" placeholder="Product खोजें..." oninput="filterProducts()">
+        <select id="category-filter" onchange="filterProducts()">
+            <option value="all">सभी कैटेगरीज</option>
+            <option value="beauty">पर्सनल केयर / सौंदर्य</option>
+            <option value="health">स्वास्थ्य (Health)</option>
+            <option value="wellness">वेलनेस (Wellness)</option>
+            <option value="agriculture">कृषि (Agriculture)</option>
+        </select>
     </div>
-  </div>
-  <button class="cart-btn" onclick="openCart()">🛒 Cart <span id="cartCount">0</span></button>
-</header>
 
-<main>
-  <section class="hero">
-    <span class="pill">✨ आपका अपना Online Store</span>
-    <h2>आपकी ज़रूरत के Products,<br>एक ही जगह</h2>
-    <p>स्वास्थ्य • सौंदर्य • वेलनेस • पर्सनल केयर • कृषि उत्पाद</p>
-    <a href="#products" class="hero-btn">Products देखें ↓</a>
-  </section>
+    <div class="products-grid" id="products-container"></div>
 
-  <section class="toolbar" id="products">
-    <input id="search" type="search" placeholder="🔎 Product खोजें..." oninput="renderProducts()">
-    <div id="categories" class="categories"></div>
-  </section>
-
-  <section class="section-head">
-    <div>
-      <h2>🌟 हमारे Products</h2>
-      <p>Product चुनें और details देखकर सीधे WhatsApp पर order करें।</p>
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-content">
+            <button class="close-btn" onclick="toggleCart()">X</button>
+            <h2 style="margin-bottom: 15px;">आपका कार्ट</h2>
+            <div id="cart-items"></div>
+            <hr style="margin: 10px 0;">
+            <p><strong>कुल योग: ₹<span id="total-price">0</span></strong></p>
+            <button class="order-btn" onclick="sendWhatsAppOrder()">📱 WhatsApp पर Order करें</button>
+        </div>
     </div>
-  </section>
 
-  <div id="productGrid" class="grid"></div>
-</main>
+    <script>
+        const whatsappNumber = "918827079820";
 
-<div id="modal" class="modal hidden" onclick="closeModal(event)">
-  <div class="modal-card" onclick="event.stopPropagation()">
-    <button class="close" onclick="hideModal()">×</button>
-    <div id="modalContent"></div>
-  </div>
-</div>
+        const products = [
+            { id: 1, name: "Sanitary Pad Premium Quality (5 Box)", category: "beauty", mrp: 2000, price: 1000, img: "https://via.placeholder.com/150?text=Sanitary+Pad" }
+        ];
 
-<aside id="cart" class="cart hidden">
-  <div class="cart-head">
-    <h2>🛒 आपका Cart</h2>
-    <button onclick="closeCart()">×</button>
-  </div>
-  <div id="cartItems"></div>
-  <div class="cart-total"><span>Total</span><strong id="cartTotal">₹0</strong></div>
-  <button class="whatsapp full" onclick="orderCart()">WhatsApp पर Order करें</button>
-</aside>
+        let cart = [];
 
-<footer>
-  <h2>🌸 Shreem Collection</h2>
-  <p>स्वास्थ्य • सौंदर्य • वेलनेस • केयर</p>
-  <p>आपकी ज़रूरत के Products — एक ही जगह</p>
-  <small>© 2026 Shreem Collection. All Rights Reserved.</small>
-</footer>
+        function renderProducts(items) {
+            const container = document.getElementById('products-container');
+            container.innerHTML = '';
+            items.forEach(p => {
+                container.innerHTML += `
+                    <div class="product-card">
+                        <img src="${p.img}" alt="${p.name}">
+                        <div class="product-title">${p.name}</div>
+                        <div class="price">
+                            <span class="mrp">MRP: ₹${p.mrp}</span> <br>
+                            <span class="selling">Offer: ₹${p.price}</span>
+                        </div>
+                        <button class="add-btn" onclick="addToCart(${p.id})">+ Cart में जोड़ें</button>
+                    </div>
+                `;
+            });
+        }
 
-<script src="products.js"></script>
-<script src="app.js"></script>
+        function filterProducts() {
+            const search = document.getElementById('search').value.toLowerCase();
+            const category = document.getElementById('category-filter').value;
+
+            const filtered = products.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(search);
+                const matchesCategory = category === 'all' || p.category === category;
+                return matchesSearch && matchesCategory;
+            });
+
+            renderProducts(filtered);
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            updateCart();
+            alert(product.name + ' Cart में जुड़ गया है!');
+        }
+
+        function updateCart() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const container = document.getElementById('cart-items');
+            container.innerHTML = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                total += item.price;
+                container.innerHTML += `
+                    <div class="cart-item">
+                        <span>${item.name}</span>
+                        <span>₹${item.price}</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('total-price').innerText = total;
+        }
+
+        function toggleCart() {
+            const modal = document.getElementById('cart-modal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function sendWhatsAppOrder() {
+            if (cart.length === 0) {
+                alert('आपका कार्ट खाली है!');
+                return;
+            }
+
+            let msg = "नमस्ते! मैं Shreem Collection से निम्नलिखित ऑर्डर देना चाहता/चाहती हूँ:\n\n";
+            let total = 0;
+
+            cart.forEach((item, i) => {
+                msg += `${i + 1}. ${item.name} - ₹${item.price}\n`;
+                total += item.price;
+            });
+
+            msg += `\n*कुल योग: ₹${total}*`;
+
+            const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+        }
+
+        renderProducts(products);
+    </script>
 </body>
 </html>
