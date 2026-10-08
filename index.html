@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shreem Collection | स्वास्थ्य • सौंदर्य • वेलनेस • केयर</title>
+  <meta name="description" content="Shreem Collection - स्वास्थ्य, सौंदर्य, वेलनेस और केयर के products एक ही जगह।">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">🌸</div>
+    <div>
+      <h1>Shreem Collection</h1>
+      <p>स्वास्थ्य • सौंदर्य • वेलनेस • केयर</p>
+    </div>
+  </div>
+  <button class="cart-btn" onclick="openCart()">🛒 Cart <span id="cartCount">0</span></button>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="pill">✨ आपका अपना Online Store</span>
+    <h2>आपकी ज़रूरत के Products,<br>एक ही जगह</h2>
+    <p>स्वास्थ्य • सौंदर्य • वेलनेस • पर्सनल केयर • कृषि उत्पाद</p>
+    <a href="#products" class="hero-btn">Products देखें ↓</a>
+  </section>
+
+  <section class="toolbar" id="products">
+    <input id="search" type="search" placeholder="🔎 Product खोजें..." oninput="renderProducts()">
+    <div id="categories" class="categories"></div>
+  </section>
+
+  <section class="section-head">
+    <div>
+      <h2>🌟 हमारे Products</h2>
+      <p>Product चुनें और details देखकर सीधे WhatsApp पर order करें।</p>
+    </div>
+  </section>
+
+  <div id="productGrid" class="grid"></div>
+</main>
+
+<div id="modal" class="modal hidden" onclick="closeModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <button class="close" onclick="hideModal()">×</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<aside id="cart" class="cart hidden">
+  <div class="cart-head">
+    <h2>🛒 आपका Cart</h2>
+    <button onclick="closeCart()">×</button>
+  </div>
+  <div id="cartItems"></div>
+  <div class="cart-total"><span>Total</span><strong id="cartTotal">₹0</strong></div>
+  <button class="whatsapp full" onclick="orderCart()">WhatsApp पर Order करें</button>
+</aside>
+
+<footer>
+  <h2>🌸 Shreem Collection</h2>
+  <p>स्वास्थ्य • सौंदर्य • वेलनेस • केयर</p>
+  <p>आपकी ज़रूरत के Products — एक ही जगह</p>
+  <small>© 2026 Shreem Collection. All Rights Reserved.</small>
+</footer>
+
+<script src="products.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
